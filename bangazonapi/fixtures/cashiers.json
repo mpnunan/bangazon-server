@@ -1,0 +1,32 @@
+[
+  {
+    "model": "bangazonapi.cashier",
+    "pk": 1,
+    "fields": {
+      "uid": "1a",
+      "first_name": "Michael",
+      "last_name": "Nunan",
+      "manager": true
+    }
+  },
+  {
+    "model": "bangazonapi.cashier",
+    "pk": 2,
+    "fields": {
+      "uid": "2a",
+      "first_name": "Steve",
+      "last_name": "Inskeep",
+      "manager": false
+    }
+  },
+  {
+    "model": "bangazonapi.cashier",
+    "pk": 3,
+    "fields": {
+      "uid": "3a",
+      "first_name": "Mary Louise",
+      "last_name": "Kelly",
+      "manager": false
+    }
+  }
+]

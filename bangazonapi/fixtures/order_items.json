@@ -1,0 +1,65 @@
+[
+  {
+    "model": "bangazonapi.orderitem",
+    "pk": 1,
+    "fields": {
+      "order": 1,
+      "item": 1,
+      "item_quantity": 2
+    }
+  },
+  {
+    "model": "bangazonapi.orderitem",
+    "pk": 2,
+    "fields": {
+      "order": 1,
+      "item": 2,
+      "item_quantity": 1
+    }
+  },
+  {
+    "model": "bangazonapi.orderitem",
+    "pk": 3,
+    "fields": {
+      "order": 2,
+      "item": 5,
+      "item_quantity": 3
+    }
+  },
+  {
+    "model": "bangazonapi.orderitem",
+    "pk": 4,
+    "fields": {
+      "order": 3,
+      "item": 3,
+      "item_quantity": 1
+    }
+  },
+  {
+    "model": "bangazonapi.orderitem",
+    "pk": 5,
+    "fields": {
+      "order": 3,
+      "item": 4,
+      "item_quantity": 1
+    }
+  },
+  {
+    "model": "bangazonapi.orderitem",
+    "pk": 6,
+    "fields": {
+      "order": 4,
+      "item": 5,
+      "item_quantity": 1
+    }
+  },
+  {
+    "model": "bangazonapi.orderitem",
+    "pk": 7,
+    "fields": {
+      "order": 4,
+      "item": 6,
+      "item_quantity": 1
+    }
+  }
+]
