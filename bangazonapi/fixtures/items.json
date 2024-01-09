@@ -1,0 +1,56 @@
+[
+  {
+    "model": "bangazonapi.item",
+    "pk": 1,
+    "fields": {
+      "name": "Cheese Pizza",
+      "description": "You already know what it is",
+      "price": 6.99
+    }
+  },
+  {
+    "model": "bangazonapi.item",
+    "pk": 2,
+    "fields": {
+      "name": "Pepperoni Pizza",
+      "description": "Pizza, with pepperonis",
+      "price": 7.29
+    }
+  },
+  {
+    "model": "bangazonapi.item",
+    "pk": 3,
+    "fields": {
+      "name": "Jalepeno Calzone",
+      "description": "Fire",
+      "price": 5.99
+    }
+  },
+  {
+    "model": "bangazonapi.item",
+    "pk": 4,
+    "fields": {
+      "name": "Garlic Knots",
+      "description": "(Incoherent mumbling with mouth full)",
+      "price": 4.49
+    }
+  },
+  {
+    "model": "bangazonapi.item",
+    "pk": 5,
+    "fields": {
+      "name": "Baked Ziti",
+      "description": "Underrated, literal GOAT",
+      "price": 3.49
+    }
+  },
+  {
+    "model": "bangazonapi.item",
+    "pk": 6,
+    "fields": {
+      "name": "Cake",
+      "description": "Dessert",
+      "price": 1.99
+    }
+  }
+]
