@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
 from rest_framework import routers
-from bangazonapi.views import CashierView, CustomerView, ItemView, OrderView
+from bangazonapi.views import CashierView, CustomerView, ItemView, OrderView, register_user, check_user
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'cashiers', CashierView, 'cashier')
@@ -28,4 +28,6 @@ router.register(r'orders', OrderView, 'order')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('register', register_user),
+    path('checkuser', check_user),
 ]
