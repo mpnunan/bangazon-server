@@ -2,47 +2,60 @@ from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from bangazonapi.models import Order
+from bangazonapi.models import Order, Cashier, Customer
 
 
 class OrderView(ViewSet):
   
     def retrieve(self, request, pk):
         try:
-            cashier = Cashier.objects.get(pk=pk)
-            serializer = CashierSerializer(cashier)
+            order = Order.objects.get(pk=pk)
+            serializer = OrderSerializer(order)
             return Response(serializer.data)
-        except Cashier.DoesNotExist as ex:
+        except Order.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
     
     def list(self, request):
-        cashiers = Cashier.objects.all()
-        serializer = CashierSerializer(cashiers, many=True)
+        orders = Order.objects.all()
+        serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
         
     def create(self, request):
-        cashier = Cashier.objects.create(
-            uid=request.data["uid"],
-            first_name=request.data["firstName"],
-            last_name=request.data["lastName"],
-            manager=request.data["manager"]
-            
+        cashier = Cashier.objects.get(uid=request.data["uid"])
+        customer = Customer.objects.get(pk=request.data["customerId"])
+        order = Order.objects.create(
+            cashier=cashier,
+            customer=customer,
+            open_time=request.data["openTime"],
+            close_time=request.data["closeTime"],
+            open=request.data["open"],
+            type=request.data["type"],
+            payment_type=request.data["paymentType"],
+            tip_amount=request.data["tipAmount"],
+            total=request.data["total"]
         )
-        serializer = CashierSerializer(cashier)
+        serializer = OrderSerializerShallow(order)
         return Response(serializer.data)
-    
+
     def update(self, request, pk):
-        cashier = Cashier.objects.get(pk=pk)
-        cashier.uid=request.data["uid"]
-        cashier.first_name=request.data["firstName"]
-        cashier.last_name=request.data["lastName"]
-        cashier.manager=request.data["manager"]
-        cashier.save()
+        cashier = Cashier.objects.get(uid=request.data["uid"])
+        customer = Customer.objects.get(pk=request.data["customerId"])
+        order = Order.objects.get(pk=pk)
+        order.cashier=cashier
+        order.customer=customer
+        order.open_time=request.data["openTime"]
+        order.close_time=request.data["closeTime"]
+        order.open=request.data["open"]
+        order.type=request.data["type"]
+        order.payment_type=request.data["paymentType"]
+        order.tip_amount=request.data["tipAmount"]
+        order.total=request.data["total"]
+        order.save()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
     
     def destroy(self, request, pk):
-        cashier = Cashier.objects.get(pk=pk)
-        cashier.delete()
+        order = Order.objects.get(pk=pk)
+        order.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class OrderSerializer(serializers.ModelSerializer):
