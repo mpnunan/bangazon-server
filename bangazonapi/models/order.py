@@ -15,7 +15,7 @@ class Order(models.Model):
     )
     open_time = models.DateTimeField()
     close_time = models.DateTimeField(null=True)
-    open = models.BooleanField()
+    is_open = models.BooleanField()
     type = models.CharField(max_length=8)
     payment_type = models.CharField(max_length=4)
     tip_amount = models.DecimalField(max_digits=6, decimal_places=2)

@@ -17,6 +17,11 @@ class OrderView(ViewSet):
     
     def list(self, request):
         orders = Order.objects.all()
+        
+        is_open = request.query_params.get('is_open', None)
+        if is_open is not None:
+            orders = orders.filter(is_open=is_open)
+        
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
         
@@ -28,7 +33,7 @@ class OrderView(ViewSet):
             customer=customer,
             open_time=request.data["openTime"],
             close_time=request.data["closeTime"],
-            open=request.data["open"],
+            is_open=request.data["isOpen"],
             type=request.data["type"],
             payment_type=request.data["paymentType"],
             tip_amount=request.data["tipAmount"],
@@ -45,7 +50,7 @@ class OrderView(ViewSet):
         order.customer=customer
         order.open_time=request.data["openTime"]
         order.close_time=request.data["closeTime"]
-        order.open=request.data["open"]
+        order.is_open=request.data["isOpen"]
         order.type=request.data["type"]
         order.payment_type=request.data["paymentType"]
         order.tip_amount=request.data["tipAmount"]
@@ -62,11 +67,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'cashier', 'customer', 'open_time', 'close_time', 'open', 'type', 'payment_type', 'tip_amount', 'total')
+        fields = ('id', 'cashier', 'customer', 'open_time', 'close_time', 'is_open', 'type', 'payment_type', 'tip_amount', 'total')
         depth = 1
 
 class OrderSerializerShallow(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'cashier_id', 'customer_id', 'open_time', 'close_time', 'open', 'type', 'payment_type', 'tip_amount', 'total')
+        fields = ('id', 'cashier_id', 'customer_id', 'open_time', 'close_time', 'is_open', 'type', 'payment_type', 'tip_amount', 'total')
