@@ -20,3 +20,6 @@ class Order(models.Model):
     payment_type = models.CharField(max_length=4)
     tip_amount = models.DecimalField(max_digits=6, decimal_places=2)
     total = models.DecimalField(max_digits=6, decimal_places=2)
+    
+    def items(self):
+        return [item_order.item for item_order in self.item_orders.all()]

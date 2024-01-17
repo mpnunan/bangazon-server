@@ -2,7 +2,10 @@ from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from bangazonapi.models import Order, Cashier, Customer
+from bangazonapi.models import Order, Cashier, Customer, Item, OrderItem
+from rest_framework.decorators import action
+from datetime import datetime
+from django.db.models import Count
 
 
 class OrderView(ViewSet):
@@ -10,7 +13,7 @@ class OrderView(ViewSet):
     def retrieve(self, request, pk):
         try:
             order = Order.objects.get(pk=pk)
-            serializer = OrderSerializer(order)
+            serializer = OrderSerializerJoined(order)
             return Response(serializer.data)
         except Order.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
@@ -57,11 +60,74 @@ class OrderView(ViewSet):
         order.total=request.data["total"]
         order.save()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
-    
+
     def destroy(self, request, pk):
         order = Order.objects.get(pk=pk)
         order.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['put'], detail=True)
+    def close(self, request, pk):
+        """Closes an order"""
+
+        order = Order.objects.get(pk=pk)
+        order.is_open=False
+        order.close_time=datetime.now().isoformat()
+        order.save()
+        return Response({'message': 'Order Closed'}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['put'], detail=True)
+    def reopen(self, request, pk):
+        """Closes an order"""
+
+        order = Order.objects.get(pk=pk)
+        order.is_open=True
+        order.save()
+        return Response({'message': 'Order Re-opened'}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['post'], detail=True)
+    def add_item(self, request, pk):
+
+        order = Order.objects.get(pk=pk)
+        item=Item.objects.get(pk=request.data["itemId"])
+        order_item =  OrderItem.objects.create(
+            order=order,
+            item=item,
+            item_quantity=request.data["itemQuantity"]
+        )
+        return Response({'message': 'Item added'}, status=status.HTTP_201_CREATED)
+
+    @action(methods=['delete'], detail=True)
+    def remove_item(self, request, pk):
+
+        # order = Order.objects.get(pk=pk)
+        # item=Item.objects.get(pk=request.data["itemId"])
+        # order_item = OrderItem.objects.get(
+        #     order=order,
+        #     item=item
+        # )
+        order_item=OrderItem.objects.get(pk=8)
+        order_item.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=['put'], detail=True)
+    def update_item(self, request, pk):
+
+        order=Order.objects.get(pk=pk)
+        item=Item.objects.get(pk=request.data["itemId"])
+        order_item=OrderItem.objects.get(
+            order=order,
+            item=item
+        )
+        order_item.item_quantity=request.data["itemQuantity"]
+        order_item.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    count = serializers.IntegerField(default=None)
+    class Meta:
+        model = Item
+        fields = ('id', 'name', 'description', 'price', 'count')
 
 class OrderSerializer(serializers.ModelSerializer):
 
@@ -75,3 +141,10 @@ class OrderSerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('id', 'cashier_id', 'customer_id', 'open_time', 'close_time', 'is_open', 'type', 'payment_type', 'tip_amount', 'total')
+class OrderSerializerJoined(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Order
+        fields = ('id', 'cashier', 'customer', 'open_time', 'close_time', 'is_open', 'type', 'payment_type', 'tip_amount', 'total', 'items')
+        depth = 1
