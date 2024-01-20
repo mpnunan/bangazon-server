@@ -68,6 +68,10 @@ class OrderView(ViewSet):
         order = Order.objects.get(pk=pk)
         order.is_open=False
         order.close_time=datetime.now().isoformat()
+        order.type=request.data["type"]
+        order.payment_type=request.data["paymentType"]
+        order.tip_amount=request.data["tipAmount"]
+        order.total=request.data["total"]
         order.save()
         return Response({'message': 'Order Closed'}, status=status.HTTP_204_NO_CONTENT)
 

@@ -19,7 +19,7 @@ class Order(models.Model):
     type = models.CharField(max_length=8)
     payment_type = models.CharField(max_length=4)
     tip_amount = models.DecimalField(max_digits=6, decimal_places=2)
-    total = models.DecimalField(max_digits=6, decimal_places=2)
+    total = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
     def items(self):  
         return [item_order.item for item_order in self.item_orders.all()]
