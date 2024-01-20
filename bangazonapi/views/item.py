@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from bangazonapi.models import Item
 
-
 class ItemView(ViewSet):
   
     def retrieve(self, request, pk):

@@ -5,7 +5,6 @@ from rest_framework import serializers, status
 from bangazonapi.models import Order, Cashier, Customer, Item, OrderItem
 from rest_framework.decorators import action
 from datetime import datetime
-from django.db.models import Count
 
 
 class OrderView(ViewSet):
@@ -29,14 +28,13 @@ class OrderView(ViewSet):
         return Response(serializer.data)
         
     def create(self, request):
-        cashier = Cashier.objects.get(uid=request.data["uid"])
+        cashier = Cashier.objects.get(uid=request.data["cashierId"])
         customer = Customer.objects.get(pk=request.data["customerId"])
         order = Order.objects.create(
             cashier=cashier,
             customer=customer,
-            open_time=request.data["openTime"],
-            close_time=request.data["closeTime"],
-            is_open=request.data["isOpen"],
+            open_time=datetime.now().isoformat(),
+            is_open=True,
             type=request.data["type"],
             payment_type=request.data["paymentType"],
             tip_amount=request.data["tipAmount"],
@@ -46,14 +44,11 @@ class OrderView(ViewSet):
         return Response(serializer.data)
 
     def update(self, request, pk):
-        cashier = Cashier.objects.get(uid=request.data["uid"])
+        cashier = Cashier.objects.get(uid=request.data["cashierId"])
         customer = Customer.objects.get(pk=request.data["customerId"])
         order = Order.objects.get(pk=pk)
         order.cashier=cashier
         order.customer=customer
-        order.open_time=request.data["openTime"]
-        order.close_time=request.data["closeTime"]
-        order.is_open=request.data["isOpen"]
         order.type=request.data["type"]
         order.payment_type=request.data["paymentType"]
         order.tip_amount=request.data["tipAmount"]
@@ -93,19 +88,22 @@ class OrderView(ViewSet):
         order_item =  OrderItem.objects.create(
             order=order,
             item=item,
-            item_quantity=request.data["itemQuantity"]
         )
         return Response({'message': 'Item added'}, status=status.HTTP_201_CREATED)
 
-    @action(methods=['delete'], detail=True)
+    @action(methods=['put'], detail=True)
     def remove_item(self, request, pk):
 
         order = Order.objects.get(pk=pk)
         item=Item.objects.get(pk=request.data["itemId"])
-        order_item = OrderItem.objects.get(
+        order_items = OrderItem.objects.filter(
             order=order,
             item=item
         )
+        if len(order_items) > 0:
+            order_items[0].delete()
+        else:
+            pass
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True)
@@ -120,6 +118,8 @@ class OrderView(ViewSet):
         order_item.item_quantity=request.data["itemQuantity"]
         order_item.save()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
+    
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -140,7 +140,6 @@ class OrderSerializerShallow(serializers.ModelSerializer):
         fields = ('id', 'cashier_id', 'customer_id', 'open_time', 'close_time', 'is_open', 'type', 'payment_type', 'tip_amount', 'total')
 class OrderSerializerJoined(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
-    
     class Meta:
         model = Order
         fields = ('id', 'cashier', 'customer', 'open_time', 'close_time', 'is_open', 'type', 'payment_type', 'tip_amount', 'total', 'items')
