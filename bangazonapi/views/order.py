@@ -100,14 +100,12 @@ class OrderView(ViewSet):
     @action(methods=['delete'], detail=True)
     def remove_item(self, request, pk):
 
-        # order = Order.objects.get(pk=pk)
-        # item=Item.objects.get(pk=request.data["itemId"])
-        # order_item = OrderItem.objects.get(
-        #     order=order,
-        #     item=item
-        # )
-        order_item=OrderItem.objects.get(pk=8)
-        order_item.delete()
+        order = Order.objects.get(pk=pk)
+        item=Item.objects.get(pk=request.data["itemId"])
+        order_item = OrderItem.objects.get(
+            order=order,
+            item=item
+        )
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True)
@@ -124,10 +122,9 @@ class OrderView(ViewSet):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    count = serializers.IntegerField(default=None)
     class Meta:
         model = Item
-        fields = ('id', 'name', 'description', 'price', 'count')
+        fields = ('id', 'name', 'description', 'price')
 
 class OrderSerializer(serializers.ModelSerializer):
 
