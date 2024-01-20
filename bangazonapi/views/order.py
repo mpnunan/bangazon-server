@@ -107,16 +107,11 @@ class OrderView(ViewSet):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['put'], detail=True)
-    def update_item(self, request, pk):
+    def total(self, request, pk):
 
         order=Order.objects.get(pk=pk)
-        item=Item.objects.get(pk=request.data["itemId"])
-        order_item=OrderItem.objects.get(
-            order=order,
-            item=item
-        )
-        order_item.item_quantity=request.data["itemQuantity"]
-        order_item.save()
+        order.total=request.data["total"]
+        order.save()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
     
     
